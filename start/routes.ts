@@ -48,11 +48,7 @@ router
         router.post('/print-jobs/:id/printed', [PrintJobsController, 'markPrinted'])
       })
       .prefix('/operational')
-      .middleware([
-        middleware.authJwt(),
-        middleware.tenant(),
-        middleware.role(['MANAGER', 'WAITER']),
-      ])
+      .middleware([middleware.authJwt(), middleware.tenant(), middleware.role('MANAGER,WAITER')])
 
     // Admin (MANAGER)
     router
@@ -87,6 +83,6 @@ router
         router.get('/metrics/by-waiter', [AdminMetricsController, 'byWaiter'])
       })
       .prefix('/admin')
-      .middleware([middleware.authJwt(), middleware.tenant(), middleware.role(['MANAGER'])])
+      .middleware([middleware.authJwt(), middleware.tenant(), middleware.role('MANAGER')])
   })
   .prefix('/api')
