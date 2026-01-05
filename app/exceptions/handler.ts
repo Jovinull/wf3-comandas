@@ -1,9 +1,9 @@
 import type { HttpContext } from '@adonisjs/core/http'
-import HttpExceptionHandler from '@adonisjs/core/http_exception_handler'
+import { ExceptionHandler } from '@adonisjs/core/http'
 import AppError from '#exceptions/app_error'
 import { fail } from '#utils/api_response'
 
-export default class ExceptionHandler extends HttpExceptionHandler {
+export default class HttpExceptionHandler extends ExceptionHandler {
   public async handle(error: any, ctx: HttpContext) {
     const { response } = ctx
 
@@ -44,7 +44,9 @@ export default class ExceptionHandler extends HttpExceptionHandler {
       error?.status ?? 500,
       'INTERNAL_ERROR',
       'Unexpected error',
-      process.env.NODE_ENV !== 'production' ? { name: error?.name, message: error?.message } : undefined
+      process.env.NODE_ENV !== 'production'
+        ? { name: error?.name, message: error?.message, stack: error?.stack }
+        : undefined
     )
   }
 }
