@@ -1,19 +1,25 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
-import User from '#models/user'
+import Product from '#models/product'
 
-export default class Restaurant extends BaseModel {
-  static readonly table = 'restaurants'
+export default class Category extends BaseModel {
+  static readonly table = 'categories'
 
   @column({ isPrimary: true })
   declare id: string
 
+  @column({ columnName: 'restaurant_id' })
+  declare restaurantId: string
+
   @column()
   declare name: string
 
-  @column()
-  declare slug: string
+  @column({ columnName: 'sort_order' })
+  declare sortOrder: number | null
+
+  @column({ columnName: 'is_active' })
+  declare isActive: boolean
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -21,6 +27,6 @@ export default class Restaurant extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
-  @hasMany(() => User)
-  declare users: HasMany<typeof User>
+  @hasMany(() => Product)
+  declare products: HasMany<typeof Product>
 }
