@@ -1,28 +1,50 @@
-import app from '@adonisjs/core/services/app'
-import { HttpContext, ExceptionHandler } from '@adonisjs/core/http'
+import type { HttpContext } from '@adonisjs/core/http'
+import HttpExceptionHandler from '@adonisjs/core/http_exception_handler'
+import AppError from '#exceptions/app_error'
+import { fail } from '#utils/api_response'
 
-export default class HttpExceptionHandler extends ExceptionHandler {
-  /**
-   * In debug mode, the exception handler will display verbose errors
-   * with pretty printed stack traces.
-   */
-  protected debug = !app.inProduction
+export default class ExceptionHandler extends HttpExceptionHandler {
+  public async handle(error: any, ctx: HttpContext) {
+    const { response } = ctx
 
-  /**
-   * The method is used for handling errors and returning
-   * response to the client
-   */
-  async handle(error: unknown, ctx: HttpContext) {
-    return super.handle(error, ctx)
-  }
+    // AppError (controle do domínio)
+    if (error instanceof AppError) {
+      return fail(response, error.status ?? 400, error.apiCode, error.message, error.details)
+    }
 
-  /**
-   * The method is used to report error to the logging service or
-   * the third party error monitoring service.
-   *
-   * @note You should not attempt to send a response from this method.
-   */
-  async report(error: unknown, ctx: HttpContext) {
-    return super.report(error, ctx)
+    // VineJS validation
+    if (error?.code === 'E_VALIDATION_ERROR') {
+      const details = error.messages ?? error.message
+      return fail(response, 422, 'VALIDATION_ERROR', 'Validation failed', details)
+    }
+
+    // Route not found
+    if (error?.code === 'E_ROUTE_NOT_FOUND') {
+      return fail(response, 404, 'NOT_FOUND', 'Route not found')
+    }
+
+    // Lucid "Row not found"
+    if (error?.code === 'E_ROW_NOT_FOUND') {
+      return fail(response, 404, 'NOT_FOUND', 'Resource not found')
+    }
+
+    // Postgres unique violation
+    if (error?.code === '23505') {
+      return fail(response, 409, 'CONFLICT', 'Resource conflict')
+    }
+
+    // Postgres foreign key violation
+    if (error?.code === '23503') {
+      return fail(response, 409, 'CONFLICT', 'Foreign key constraint violation')
+    }
+
+    // Default
+    return fail(
+      response,
+      error?.status ?? 500,
+      'INTERNAL_ERROR',
+      'Unexpected error',
+      process.env.NODE_ENV !== 'production' ? { name: error?.name, message: error?.message } : undefined
+    )
   }
 }
