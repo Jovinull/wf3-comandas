@@ -19,10 +19,7 @@ export default class AuthJwtMiddleware {
       throw new AppError('UNAUTHORIZED', 'Invalid token', 401)
     }
 
-    const user = await User.query()
-      .where('id', payload.sub)
-      .preload('restaurant')
-      .first()
+    const user = await User.query().where('id', payload.sub).preload('restaurant').first()
 
     if (!user) throw new AppError('UNAUTHORIZED', 'Invalid token', 401)
 
