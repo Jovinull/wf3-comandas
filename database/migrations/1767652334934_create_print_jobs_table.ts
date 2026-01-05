@@ -2,7 +2,7 @@ import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
   public async up() {
-    this.schema.createTable('users', (table) => {
+    this.schema.createTable('print_jobs', (table) => {
       table.uuid('id').primary().defaultTo(this.db.rawQuery('gen_random_uuid()').knexQuery)
       table
         .uuid('restaurant_id')
@@ -11,20 +11,21 @@ export default class extends BaseSchema {
         .inTable('restaurants')
         .onDelete('restrict')
 
-      table.string('email', 255).notNullable().unique()
-      table.string('role', 20).notNullable()
-      table.string('password_hash', 255).notNullable()
-      table.boolean('is_active').notNullable().defaultTo(true)
+      table.uuid('order_id').notNullable().references('id').inTable('orders').onDelete('restrict')
+      table.string('status', 20).notNullable()
+      table.jsonb('payload').notNullable()
 
       table.timestamp('created_at', { useTz: true }).notNullable().defaultTo(this.now())
       table.timestamp('updated_at', { useTz: true }).notNullable().defaultTo(this.now())
 
       table.index(['restaurant_id'])
-      table.index(['role'])
+      table.index(['restaurant_id', 'status'])
+      table.index(['restaurant_id', 'created_at'])
+      table.unique(['order_id'])
     })
   }
 
   public async down() {
-    this.schema.dropTable('users')
+    this.schema.dropTable('print_jobs')
   }
 }
