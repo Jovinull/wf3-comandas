@@ -18,6 +18,26 @@ export default defineConfig({
 
   /*
   |--------------------------------------------------------------------------
+  | Directories
+  |--------------------------------------------------------------------------
+  |
+  | Define the directory structure used by AdonisJS.
+  |
+  */
+  directories: {
+    config: 'config',
+    public: 'public',
+    contracts: 'contracts',
+    providers: 'providers',
+    languageFiles: 'resources/lang',
+    migrations: 'database/migrations',
+    seeders: 'database/seeders',
+    views: 'resources/views',
+    start: 'start',
+  },
+
+  /*
+  |--------------------------------------------------------------------------
   | Commands
   |--------------------------------------------------------------------------
   |
@@ -46,7 +66,7 @@ export default defineConfig({
     () => import('@adonisjs/core/providers/vinejs_provider'),
     () => import('@adonisjs/cors/cors_provider'),
     () => import('@adonisjs/lucid/database_provider'),
-    () => import('@adonisjs/auth/auth_provider')
+    () => import('@adonisjs/auth/auth_provider'),
   ],
 
   /*
