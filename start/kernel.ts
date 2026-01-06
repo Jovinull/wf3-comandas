@@ -3,10 +3,9 @@
 |--------------------------------------------------------------------------
 | HTTP kernel file
 |--------------------------------------------------------------------------
-|
 | The HTTP kernel file is used to register the middleware with the server
 | or the router.
-|
+|--------------------------------------------------------------------------
 */
 
 import router from '@adonisjs/core/services/router'
@@ -25,8 +24,12 @@ server.errorHandler(() => import('#exceptions/handler'))
  */
 server.use([
   () => import('#middleware/container_bindings_middleware'),
-  () => import('#middleware/force_json_response_middleware'),
+
+  // CORS cedo para lidar bem com preflight (OPTIONS)
   () => import('@adonisjs/cors/cors_middleware'),
+
+  // Força JSON depois, para não atrapalhar preflight
+  () => import('#middleware/force_json_response_middleware'),
 ])
 
 /**
