@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeSave, belongsTo, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 
 import { compose } from '@adonisjs/core/helpers'
@@ -51,11 +51,4 @@ export default class User extends compose(
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
-
-  @beforeSave()
-  public static async hashPasswordHook(user: User) {
-    if (user.$dirty.passwordHash) {
-      user.passwordHash = await hash.make(user.passwordHash)
-    }
-  }
 }

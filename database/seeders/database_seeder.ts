@@ -12,8 +12,7 @@ import { UserRole } from '#utils/enums'
 
 export default class Wf3ComandasSeeder extends BaseSeeder {
   public async run() {
-    const plainPassword = env.get('DEFAULT_SEED_PASSWORD') ?? '12345678'
-    const passwordHash = await hash.make(plainPassword)
+    const passwordHash = '12345678'
 
     // Restaurants
     const r1 = await Restaurant.firstOrCreate(
